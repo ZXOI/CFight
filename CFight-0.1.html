@@ -1,0 +1,165 @@
+<html>
+	<body>
+		<canvas id="board" width="1260px" height="540px"></canvas>
+	</body>
+	<script>
+		var cvs=document.getElementById("board");
+		max = Math.max;
+		min = Math.min;
+		abs = Math.abs;
+		sqrt = Math.sqrt;
+		pi = Math.PI;
+		floor = Math.floor;
+		const blockw = 60;
+		const boardw = 19,boardh = 7;
+		const dir = [[1, 0], [0, -1], [-1, 0], [0, 1]];
+		const chessr1 = 15, chessr2 = 18;
+		const colors = {
+			teams:[["#FFFFFF","#EEEEEE"],["#D70450","#B50028"],["#44B7CD","#2295AB"]],
+			background:"#1E1F1C",
+			blank:"#272822",
+			obstacle:"#49483E",
+			line:"#75715E88",
+			mouseon:"#A6E22E"
+		};
+		const maps = {
+			name:["test"],
+			map:[[
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,1,0,0,2,0,0,4,0,0,8,0,0,15,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+				]
+			],
+			teammap:[[
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0],
+					[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0],
+					[11,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,12],
+					[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0],
+					[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+				]
+			]
+		};
+		var clock = 0;
+		var map = maps.map[0];
+		var chessmap = maps.teammap[0];
+		var mousex = 0, mousey = 0;
+		var mouseonx = 0, mouseony = 0;
+		document.addEventListener('click', getmousepos);
+		function getmousepos(e) {
+			mousex = e.clientX;
+			mousey = e.clientY;
+			mouseonx = floor(mousex/blockw);
+			mouseony = floor(mousey/blockw);
+			// if(clock % 30 == 0) {
+			// 	console.log(mouseonx,mouseony);
+			// }
+		}
+		function drawfillrect(x, y, a, b, d, col, fillcol) {
+			cvs.fillStyle = col;
+			cvs.fillRect(x, y, a, d);
+			cvs.fillRect(x, y, d, b);
+			cvs.fillRect(x+a-d, y, d, b);
+			// console.log(x+a-d,y,a,d);
+			cvs.fillRect(x, y+b-d, a, d);
+			cvs.fillStyle = fillcol;
+			cvs.fillRect(x+d, y+d, a-d*2, b-d*2);
+		}
+		function drawcirc(ox, oy, r1, r2, col, fillcol) {
+			cvs.beginPath();
+			cvs.lineWidth = r2-r1;
+			cvs.strokeStyle = col;
+			cvs.arc(ox, oy, (r1+r2)/2, 0, 2*pi, true);
+			cvs.stroke();
+			cvs.closePath();
+			cvs.beginPath();
+			cvs.lineWidth = r1;
+			cvs.strokeStyle = fillcol;
+			cvs.arc(ox, oy, r1/2, 0, 2*pi, true);
+			cvs.stroke();
+			cvs.closePath();
+		}
+		function drawmap() {
+			cvs.fillStyle = colors.background;
+			cvs.fillRect(0, 0, blockw*(boardw+2), blockw*(boardh+2));
+			for(let i=0; i<=boardw+1; i+=1) {
+				for(let j=0; j<=boardh+1; j+=1) {
+					if(chessmap[j][i] > 10) {
+						cvs.fillStyle = colors.teams[chessmap[j][i]-10][1] + "DD";
+						cvs.fillRect(i*blockw, j*blockw, blockw, blockw);
+						cvs.fillStyle = colors.background;
+						cvs.fillRect(i*blockw+3, j*blockw+3, blockw-6, blockw-6);
+						cvs.fillStyle = colors.teams[chessmap[j][i]-10][0] + "33";
+						cvs.fillRect(i*blockw+3, j*blockw+3, blockw-6, blockw-6);
+					}
+					if(i<=0 || j<=0 || i>boardw || j>boardh) {
+						continue;
+					}
+					cvs.fillStyle = colors.blank;
+					cvs.fillRect(i*blockw, j*blockw, blockw, blockw);
+					// console.log(i, j);
+					let k=1;
+					for(let d=0; d<4; d+=1) {
+						if((map[j][i] & k) > 0) {
+							// console.log(i,j,d);
+							cvs.fillStyle = colors.obstacle;
+							let x=i*blockw+(dir[d][0]+dir[d][1]-1)*dir[d][0]*blockw/4;
+							let y=j*blockw+(dir[d][0]+dir[d][1]-1)*dir[d][1]*blockw/4;
+							cvs.fillRect(x,y,(abs(dir[d][1])+1)*blockw/2,(abs(dir[d][0])+1)*blockw/2)
+						}
+						k = k*2;
+					}
+					if(mouseonx==i && mouseony==j) {
+						drawfillrect(i*blockw, j*blockw, blockw, blockw, 3, colors.mouseon, colors.mouseon + "33");
+					}
+				}
+			}
+			for(let i=0; i<=boardw; i+=1) {
+				// console.log((i+1)*blockw-5, blockw, 10, boardh*blockw);
+				cvs.fillStyle = colors.line;
+				cvs.fillRect((i+1)*blockw-1, blockw, 2, boardh*blockw);
+			}
+			for(let i=0; i<=boardh; i+=1) {
+				// console.log((i+1)*blockw-5, blockw, 10, boardh*blockw);
+				cvs.fillStyle = colors.line;
+				cvs.fillRect(blockw, (i+1)*blockw-1, boardw*blockw, 2);
+			}
+			// console.log("drawed.");
+		}
+		function drawchess() {
+			for(let i=1; i<=boardh; i+=1) {
+				for(let j=1; j<=boardw; j+=1) {
+					if(chessmap[i][j]!=0) {
+						let x=j*blockw+blockw/2;
+						let y=i*blockw+blockw/2;
+						drawcirc(x, y, chessr1, chessr2, colors.teams[chessmap[i][j]][1], colors.teams[chessmap[i][j]][0]);
+					}
+				}
+			}
+		}
+		function init() {
+			cvs = document.getElementById("board").getContext("2d");
+			
+			requestAnimationFrame(update);
+		}
+		function update() {
+			clock += 1;
+			drawmap();
+			drawchess();
+			// console.log("updated.");
+			requestAnimationFrame(update);
+		}
+		onload = init;
+	</script>
+	<style>
+	</style>
+</html>

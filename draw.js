@@ -1,11 +1,11 @@
 function drawfps() {
 	let str = FPS.toString() + " FPS";
 	ctx.fillStyle = colors.fps;
-	ctx.font = "15px Consolas";
+	ctx.font = "15px Monospace";
 	ctx.fillText(str, (boardw+2)*blockw - 9*str.length, (boardh+2)*blockw - 5);
 }
 function drawinfo() {
-	ctx.font="30px Consolas";
+	ctx.font="30px Monospace";
 	ctx.fillStyle = colors.mapinfo;
 	let str = "Map : " + maps[mapid].name;
 	// console.log(str);
@@ -67,7 +67,7 @@ function drawchess() {
 	}
 }
 function draw_player_moving() {
-	ctx.font = "20px Consolas";
+	ctx.font = "20px Monospace";
 	ctx.fillStyle = colors.teams[nowmove][0];
 	let str = "Team " + nowmove.toString() + " Moving.";
 	ctx.fillText(str,boardw*blockw - 11*str.length + 110, 25);

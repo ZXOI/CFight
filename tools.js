@@ -35,9 +35,12 @@ function drawcirc(ox, oy, r1, r2, col, fillcol) {
 var mousex = 0, mousey = 0;
 var selectedx = -1, selectedy = -1;
 document.addEventListener('click', getmousepos);
+
+var cvs = document.getElementById('board');
+
 function getmousepos(e) {
-	mousex = e.clientX - 5;
-	mousey = e.clientY - 5;
+	mousex = e.clientX - cvs.x;
+	mousey = e.clientY - cvs.y;
 	mouse_select(Math.floor(mousey/blockw),Math.floor(mousex/blockw));
 }
 

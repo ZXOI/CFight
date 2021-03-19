@@ -34,7 +34,6 @@ function Chess(_x, _y, _t){
 		if(this.alive == 0){
 			return 0;
 		}
-		console.log(this.at_border);
 		if(this.at_border[d]){
 			return 1;
 		}
@@ -44,15 +43,25 @@ function Chess(_x, _y, _t){
 		let chess_cnt=0;
 		let i = this.x, j = this.y;
 		let dis = 0;
+		let lst = -1;
 		for(;; i += dir[d][0],j += dir[d][1], dis++){
+			if((map[i][j] & (1<<d)) != 0) {
+				return dis;
+			}
 			let k = get_chess_by_pos(i + dir[d][0], j + dir[d][1]);
 			if(k!=-1){
 				chess_cnt ++;
+				lst = k;
 			}
 			let _i = i + dir[d][0] * chess_cnt;
 			let _j = j + dir[d][1] * chess_cnt;
-			//console.log(_i,_j);
-			if(_i < 1 || _i > boardh || _j < 1 || _j > boardw || (map[_i][_j] & (1<<d))){
+			// if(k!=-1)console.log(d,chesses[k].x,chesses[k].y);
+			if(_i < 1 || _i > boardh || _j < 1 || _j > boardw){
+				// if(lst!=-1)console.log(">",d,chesses[lst].team==this.team);
+				return dis - (chess_cnt == 0) - (lst!=-1 && chesses[lst].team==this.team && !chesses[lst].at_border[d]);
+			}
+			// console.log(d);
+			if((map[_i][_j] & (1<<d)) != 0) {
 				return dis;
 			}
 		}
@@ -78,23 +87,6 @@ function Chess(_x, _y, _t){
 		}
 	}
 	this.move = (d, dis) => {
-		// let chess_on_way = new Array();
-		// let i = this.x, j = this.y;
-		// let mvcnt = 0;
-		// for(;mvcnt < dis; i += dir[d][0],j += dir[d][1],mvcnt += 1) {
-		// 	let k = get_chess_by_pos(i + dir[d][0], j + dir[d][1]);
-		// 	if(k!=-1)console.log(chesses[k].x,chesses[k].y);
-		// 	if(k!=-1) {
-		// 		chess_on_way.push(k);
-		// 	}
-		// }
-		// console.log(chess_on_way);
-		// for(let th in chess_on_way) {
-		// 	console.log(th,chess_on_way[th]);
-		// 	chesses[chess_on_way[th]].move(d,dis-Math.abs(chesses[chess_on_way[th]].x-this.x)-Math.abs(chesses[chess_on_way[th]].y-this.y)+th+1);
-		// }
-		// this.x += dis * dir[d][0];
-		// this.y += dis * dir[d][1];
 		for(let mvcnt = 0; mvcnt < dis; mvcnt += 1) {
 			let last = get_chess_by_pos(this.x, this.y);
 			let i = this.x + dir[d][0], j = this.y + dir[d][1];
@@ -145,7 +137,6 @@ function Chess(_x, _y, _t){
 		}
 		if(!this.tprc) {
 			let k = get_chess_by_pos(this.x,this.y);
-			//console.log("Deling ",k);
 			chesses[k] = chesses[chesses.length - 1];
 			chesses.pop();
 		}
@@ -162,7 +153,6 @@ function Chess(_x, _y, _t){
 function add_chess() {
 	for(let i = 0; i <= boardh; i++) {
 		for(let j = 0; j <= boardw; j++) {
-			// console.log(i,j,chessmap[i][j]);
 			if(chessmap[i][j] != 0 && chessmap[i][j] <= 10) {
 				chesses.push(new Chess(i, j, chessmap[i][j]));
 			}
@@ -199,16 +189,12 @@ function mouse_select(x, y) {
 	selectedx = x;
 	selectedy = y;
 	let selectchess = get_chess_by_pos(x, y);
-	// console.log(selectchess);
-	// if(selectedchess != -1 && chesses[selectedchess].team == nowmove && chesses[selectedchess].can_move(getDir()))
 	if(selectedchess != -1 && chesses[selectedchess].team == nowmove) {
-		//console.log("Move!");
 		let k = player_move();
 		if(k) {
 			selectedchess = -1;
 			return;
 		}
 	}
-	//console.log("Select!");
 	selectedchess=selectchess;
 }

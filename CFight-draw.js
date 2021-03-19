@@ -57,7 +57,7 @@ function drawmap() {
 	// console.log("drawed.");
 }
 function drawchess() {
-	console.log("Selected chess ",selectedchess);
+	// console.log("Selected chess ",selectedchess);
 	for(let i in chesses){
 		let e = chesses[i];
 		e.draw();

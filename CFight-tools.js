@@ -36,8 +36,8 @@ var mousex = 0, mousey = 0;
 var selectedx = -1, selectedy = -1;
 document.addEventListener('click', getmousepos);
 function getmousepos(e) {
-	mousex = e.clientX;
-	mousey = e.clientY;
+	mousex = e.clientX - 5;
+	mousey = e.clientY - 5;
 	mouse_select(Math.floor(mousey/blockw),Math.floor(mousex/blockw));
 }
 

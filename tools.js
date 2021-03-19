@@ -39,8 +39,8 @@ document.addEventListener('click', getmousepos);
 var cvs = document.getElementById('board');
 
 function getmousepos(e) {
-	mousex = e.clientX - cvs.x;
-	mousey = e.clientY - cvs.y;
+	mousex = e.clientX - 6;
+	mousey = e.clientY - 6;
 	mouse_select(Math.floor(mousey/blockw),Math.floor(mousex/blockw));
 }
 

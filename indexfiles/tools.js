@@ -131,7 +131,7 @@ function rand_one(a) {
 
 function get_map(a) {
 	let str = "Choose a map from :\n";
-	for(i in a) {
+	for(let i in a) {
 		str += "    " + a[i].toString() + " : " +maps[a[i]].name + "\n";
 	}
 	let ret = prompt(str,rand_one(a));

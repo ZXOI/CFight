@@ -149,6 +149,31 @@ function Chess(_x, _y, _t){
 		return 0;
 	}
 }
+function Flag (_x, _y) {
+	this.x = _x;
+	this.y = _y;
+
+	this.update = () => {
+	}
+
+	this.update_flagpoints = () => {
+		let k = get_chess_by_pos(this.x,this.y);
+		if(k != -1) {
+			let cnt = 0;
+			for(let i = 1; i <= team_cnt ;i++) {
+				if(i != chesses[k].team && flag_points[i] > 0) {
+					cnt ++;
+					flag_points[i] -= 1;
+				}
+			}
+			flag_points[chesses[k].team] += cnt;
+		}
+	}
+
+	this.draw = () => {
+		drawfillrect(this.y*blockw, this.x*blockw, blockw, blockw, 3, colors.flag, colors.flag+"33");
+	}
+}
 
 function add_chess() {
 	for(let i = 0; i <= boardh; i++) {
@@ -159,6 +184,20 @@ function add_chess() {
 		}
 	}
 }
+
+function add_flag() {
+	for(let i = 0; i <= boardh; i++) {
+		for(let j = 0; j <= boardw; j++) {
+			if(spclmap[i][j] == 1) {
+				flags.push(new Flag(i, j));
+			}
+		}
+	}
+	for(let i = 0; i <= team_cnt; i++) {
+		flag_points.push(20);
+	}
+}
+
 function update_chess() {
 	for(let i in chesses) {
 		chesses[i].update();
@@ -170,10 +209,23 @@ function update_chess() {
 	}
 }
 
+function update_flag_points() {
+	for(let i in flags) {
+		flags[i].update_flagpoints();
+	}
+	for(let i=1; i <= team_cnt; i++) {
+		if(flag_points[i] == 20*team_cnt) {
+			win = i;
+		}
+	}
+}
+
 function player_move(){
 	if(chesses[selectedchess].move_to(selectedx,selectedy))
 	{
 		nowmove = (nowmove % team_cnt) + 1;
+		round ++;
+		update_flag_points();
 		return 1;
 	}
 	return 0;
@@ -197,4 +249,13 @@ function mouse_select(x, y) {
 		}
 	}
 	selectedchess=selectchess;
+}
+
+function add_message(str) {
+	messages.push(str);
+	if(messages.length > max_massage) {
+		pop_front(messages);
+	}
+}
+function update_message() {
 }

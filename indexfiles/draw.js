@@ -5,11 +5,16 @@ function drawfps() {
 	ctx.fillText(str, (boardw+2)*blockw - 9*str.length, (boardh+2)*blockw - 5);
 }
 function drawinfo() {
+	ctx.fillStyle = colors.blank;
+	ctx.fillRect((boardw+2)*blockw,0,infowidth,(boardh+2)*blockw);
 	ctx.font="30px Monospace";
 	ctx.fillStyle = colors.mapinfo;
 	let str = "Map : " + maps[mapid].name;
-	// console.log(str);
-	ctx.fillText(str, (boardw+2)*blockw/2-11*str.length, 30);
+	ctx.fillText(str, (boardw+2)*blockw + 15, 40);
+	ctx.font = "20px Monospace";
+	ctx.fillStyle = colors.teams[nowmove][0];
+	str = "Team " + nowmove.toString() + " Moving.";
+	ctx.fillText(str,(boardw+2)*blockw + 15, 75);
 }
 function drawmap() {
 	ctx.fillStyle = colors.background;
@@ -66,17 +71,35 @@ function drawchess() {
 		}
 	}
 }
-function draw_player_moving() {
+function drawflag() {
+	for(let i in flags){
+		let e = flags[i];
+		e.draw();
+	}
+}
+
+function drawflagpoints() {
+	let s = 0;
+	for(let i = 1; i <= team_cnt; i += 1) {
+		let sx = s / (team_cnt * 20) * (boardw + 2) * blockw;
+		let w = flag_points[i] / (team_cnt * 20) * (boardw + 2) * blockw;
+		ctx.fillStyle = colors.teams[i][0];
+		ctx.fillRect(sx,0,w,20);
+		s += flag_points[i];
+	}
+}
+
+function drawmessage() {
+	
 	ctx.font = "20px Monospace";
-	ctx.fillStyle = colors.teams[nowmove][0];
-	let str = "Team " + nowmove.toString() + " Moving.";
-	ctx.fillText(str,boardw*blockw - 11*str.length + 110, 25);
+	ctx.fillStyle = colors.mapinfo;
 }
 
 function drawall() {
 	drawfps();
 	drawmap();
 	drawinfo();
+	drawflag();
 	drawchess();
-	draw_player_moving();
+	drawflagpoints();
 }

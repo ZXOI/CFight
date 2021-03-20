@@ -8,9 +8,10 @@
 	<script type="text/javascript" src="./draw.js"></script>
 	<script>
 		var clock = 0;
-		var mapid = 0;
+		var mapid = get_map([0,1]);
 		var map = maps[mapid].map;
 		var chessmap = maps[mapid].teammap;
+		var spclmap = maps[mapid].specialmap;
 		var fpsqueue = new Array();
 		var FPS = 0;
 		var chesses = new Array();

@@ -118,3 +118,22 @@ function swap(a,b) {
 	a = b;
 	b = c;
 }
+
+function get_random(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function rand_one(a) {
+	return a[get_random(0, a.length-1)];
+}
+
+function get_map(a) {
+	let str = "Choose a map from :\n";
+	for(i in a) {
+		str += "    " + a[i].toString() + " : " +maps[a[i]].name + "\n";
+	}
+	let ret = prompt(str,rand_one(a));
+	return ret;
+}

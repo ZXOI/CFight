@@ -137,3 +137,37 @@ function get_map(a) {
 	let ret = prompt(str,rand_one(a));
 	return ret;
 }
+
+function get_msg_line(str) {
+	return Math.ceil(str.length/max_msg_chars_per_line);
+}
+
+function get_all_msg_line() {
+	let ans = 0;
+	for(let i = 0; i < messages.length; i += 1) {
+		ans += get_msg_line(messages[i]);
+	}
+	return ans;
+}
+
+function add_msg(str) {
+	let thline = get_msg_line(str);
+	if(thline >= max_msg_line) {
+		return 0;
+	}
+	while(get_all_msg_line() + thline > max_msg_line) {
+		pop_front(messages);
+	}
+	messages.push(str);
+}
+
+function split_msg(str) {
+	let ans = new Array();
+	let i = 0;
+	while(i + max_msg_chars_per_line < str.length) {
+		ans.push(str.substr(i,max_msg_chars_per_line));
+		i += max_msg_chars_per_line;
+	}
+	ans.push(str.substr(i));
+	return ans;
+}

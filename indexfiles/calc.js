@@ -175,6 +175,11 @@ function Flag (_x, _y) {
 	}
 }
 
+function Message(from, text) {
+	this.from = from;
+	this.text = text;
+}
+
 function add_chess() {
 	for(let i = 0; i <= boardh; i++) {
 		for(let j = 0; j <= boardw; j++) {
@@ -249,13 +254,4 @@ function mouse_select(x, y) {
 		}
 	}
 	selectedchess=selectchess;
-}
-
-function add_message(str) {
-	messages.push(str);
-	if(messages.length > max_massage) {
-		pop_front(messages);
-	}
-}
-function update_message() {
 }

@@ -90,9 +90,25 @@ function drawflagpoints() {
 }
 
 function drawmessage() {
-	
+	ctx.fillRect((boardw+2)*blockw + 15,100,370,10);
+	drawfillrect((boardw+2)*blockw + 15, 100, 370, 400, 3, colors.obstacle, colors.background);
 	ctx.font = "20px Monospace";
-	ctx.fillStyle = colors.mapinfo;
+	let y = 130;
+	for(let i = 0; i < messages.length; i += 1) {
+		ctx.fillStyle = colors.teams[messages[i].from][0];
+		ctx.fillText(teams[messages[i].from].name, (boardw+2)*blockw + 15 + 10, y);
+		ctx.fillStyle = colors.mapinfo;
+		let rmsg = messages[i].text;
+		rmsg = ": " +rmsg;
+		for(let j = 0; j <= teams[messages[i].from].name.length; j += 1) {
+			rmsg = " " + rmsg;
+		}
+		let spl = split_msg(rmsg);
+		for(let j = 0; j < spl.length; j += 1) {
+			ctx.fillText(spl[j], (boardw+2)*blockw + 15 + 10, y);
+			y += 25 ;
+		}
+	}
 }
 
 function drawall() {
@@ -102,4 +118,5 @@ function drawall() {
 	drawflag();
 	drawchess();
 	drawflagpoints();
+	drawmessage();
 }

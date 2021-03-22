@@ -10,7 +10,7 @@
 		var infowidth = 400;
 		var clock = 0;
 		var round = 0;
-		var mapid = get_map([0,1]);
+		var mapid = get_map([1,2]);
 		var map = maps[mapid].map;
 		var chessmap = maps[mapid].teammap;
 		var spclmap = maps[mapid].specialmap;
@@ -23,12 +23,17 @@
 		var win = 0;
 		var flags = new Array();
 		var flag_points = new Array();
-		var messages = new Array("test1","test2");
-		const max_messages = 10;
+		var messages = new Array();
+		const max_msg_line = 15;
+		const max_msg_chars_per_line = 31;
 
 		function init() {
 			add_chess();
 			add_flag();
+			messages.push(new Message(0,"system:test"));
+			messages.push(new Message(1,"p1test"));
+			messages.push(new Message(2,"p2test"));
+			messages.push(new Message(1,"Long Long Long Long Long Long Long message test"));
 			requestAnimationFrame(update);
 		}
 

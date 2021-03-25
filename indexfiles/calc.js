@@ -44,13 +44,13 @@ function Chess(_x, _y, _t){
 		let i = this.x, j = this.y;
 		let dis = 0;
 		let lst = -1;
-		for(;; i += dir[d][0],j += dir[d][1], dis++){
+		for(;; i += dir[d][0],j += dir[d][1], dis+= 1){
 			if((map[i][j] & (1<<d)) != 0) {
 				return dis;
 			}
 			let k = get_chess_by_pos(i + dir[d][0], j + dir[d][1]);
 			if(k!=-1){
-				chess_cnt ++;
+				chess_cnt += 1;
 				lst = k;
 			}
 			let _i = i + dir[d][0] * chess_cnt;
@@ -67,8 +67,15 @@ function Chess(_x, _y, _t){
 		}
 	}
 	this.check_alive = () => {
+		let k = this.alive;
 		if(this.x < 1 || this.y < 1 || this.x > boardh || this.y > boardw){
 			this.alive = 0;
+		}
+		if(k==1 && !this.alive) {
+			chess_cnt[this.team] -= 1;
+			if(chess_cnt[this.team] == 0) {
+				losing.push(this.team);
+			}
 		}
 	}
 	this.draw_possibilities = () => {
@@ -141,10 +148,10 @@ function Chess(_x, _y, _t){
 			chesses.pop();
 		}
 	}
-	this.check_win = () => {
+	this.check_get = () => {
 		if(chessmap[this.x][this.y] != this.team+10 && chessmap[this.x][this.y] > 10)
 		{
-			return 1;
+			return chessmap[this.x][this.y] - 10;
 		}
 		return 0;
 	}
@@ -160,9 +167,9 @@ function Flag (_x, _y) {
 		let k = get_chess_by_pos(this.x,this.y);
 		if(k != -1) {
 			let cnt = 0;
-			for(let i = 1; i <= team_cnt ;i++) {
+			for(let i = 1; i <= team_cnt ;i+= 1) {
 				if(i != chesses[k].team && flag_points[i] > 0) {
-					cnt ++;
+					cnt += 1;
 					flag_points[i] -= 1;
 				}
 			}
@@ -181,25 +188,35 @@ function Message(from, text) {
 }
 
 function add_chess() {
-	for(let i = 0; i <= boardh; i++) {
-		for(let j = 0; j <= boardw; j++) {
+	for(let i = 0; i <= boardh; i+= 1) {
+		for(let j = 0; j <= boardw; j+= 1) {
 			if(chessmap[i][j] != 0 && chessmap[i][j] <= 10) {
 				chesses.push(new Chess(i, j, chessmap[i][j]));
+				chess_cnt[chessmap[i][j]] += 1;
 			}
 		}
 	}
 }
 
 function add_flag() {
-	for(let i = 0; i <= boardh; i++) {
-		for(let j = 0; j <= boardw; j++) {
+	for(let i = 0; i <= boardh; i+= 1) {
+		for(let j = 0; j <= boardw; j+= 1) {
 			if(spclmap[i][j] == 1) {
 				flags.push(new Flag(i, j));
 			}
 		}
 	}
-	for(let i = 0; i <= team_cnt; i++) {
+	for(let i = 0; i <= team_cnt; i+= 1) {
 		flag_points.push(20);
+	}
+}
+
+function add_player() {
+	survive.push(1);
+	chess_cnt.push(0);
+	for(let i = 1; i <= team_cnt; i += 1) {
+		survive.push(1);
+		chess_cnt.push(0);
 	}
 }
 
@@ -208,8 +225,8 @@ function update_chess() {
 		chesses[i].update();
 	}
 	for(let i in chesses) {
-		if(chesses[i].check_win()) {
-			win = chesses[i].team;
+		if(chesses[i].check_get()) {
+			losing.push(chesses[i].check_get());
 		}
 	}
 }
@@ -218,18 +235,42 @@ function update_flag_points() {
 	for(let i in flags) {
 		flags[i].update_flagpoints();
 	}
-	for(let i=1; i <= team_cnt; i++) {
+	for(let i=1; i <= team_cnt; i+= 1) {
 		if(flag_points[i] == 20*team_cnt) {
 			win = i;
 		}
 	}
 }
 
+function update_lose() {
+	let alivecnt = 0,alive = 0;
+	for(let i=0; i<losing.length; i += 1) {
+		if(survive[losing[i]]) {
+			messages.push(new Message(losing[i],"Out of game."))
+			survive[losing[i]] = 0;
+		}
+	}
+	for(let i = 1; i <= team_cnt; i += 1) {
+		if(survive[i]) {
+			alivecnt += 1;
+			alive = i;
+		}
+	}
+	if(alivecnt == 1) {
+		messages.push(new Message(alive, "Win."));
+		return alive;
+	}
+	return 0;
+}
+
 function player_move(){
 	if(chesses[selectedchess].move_to(selectedx,selectedy))
 	{
 		nowmove = (nowmove % team_cnt) + 1;
-		round ++;
+		while(!survive[nowmove]){
+			nowmove = (nowmove % team_cnt) + 1;
+		}
+		round += 1;
 		update_flag_points();
 		return 1;
 	}

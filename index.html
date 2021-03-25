@@ -18,34 +18,44 @@
 		var fpsqueue = new Array();
 		var FPS = 0;
 		var chesses = new Array();
+		var chess_cnt = new Array();
+		var survive = new Array();
+		var losing = new Array();
 		var nowmove = 1;
 		var selectedchess = -1;
-		var win = 0;
 		var flags = new Array();
 		var flag_points = new Array();
 		var messages = new Array();
+		var win = 0;
 		const max_msg_line = 15;
 		const max_msg_chars_per_line = 31;
 
 		function init() {
+			add_player();
 			add_chess();
 			add_flag();
-			messages.push(new Message(0,"system:test"));
-			messages.push(new Message(1,"p1test"));
-			messages.push(new Message(2,"p2test"));
-			messages.push(new Message(1,"Long Long Long Long Long Long Long message test"));
+			messages.push(new Message(0,"Game started."));
+			// messages.push(new Message(1,"p1test"));
+			// messages.push(new Message(2,"p2test"));
+			// messages.push(new Message(1,"Long Long Long Long Long Long Long message test"));
+			console.log("init done.");
 			requestAnimationFrame(update);
 		}
 
 		function update() {
 			clock += 1;
+			losing = new Array();
 			updatefps();
-			drawall();
 			update_chess();
-			if(win != 0) {
-				alert("Team "+win.toString()+" wins!");
+			let win=update_lose();
+			// console.log(win);
+			// console.log("Calculated ",clock);
+			drawall();
+			if(win)
+			{
 				return;
 			}
+			// console.log("Drew ",clock);
 			requestAnimationFrame(update);
 		}
 

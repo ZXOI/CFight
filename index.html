@@ -1,0 +1,66 @@
+<html>
+	<body>
+		<canvas id="board" width="1540px" height="660px"></canvas>
+	</body>
+	<script type="text/javascript" src="./indexfiles/settings.js"></script>
+	<script type="text/javascript" src="./indexfiles/tools.js"></script>
+	<script type="text/javascript" src="./indexfiles/calc.js"></script>
+	<script type="text/javascript" src="./indexfiles/draw.js"></script>
+	<script>
+		var infowidth = 400;
+		var clock = 0;
+		var round = 0;
+		var mapid = get_map([1,2]);
+		var map = maps[mapid].map;
+		var chessmap = maps[mapid].teammap;
+		var spclmap = maps[mapid].specialmap;
+		var team_cnt = maps[mapid].teamcnt;
+		var fpsqueue = new Array();
+		var FPS = 0;
+		var chesses = new Array();
+		var chess_cnt = new Array();
+		var survive = new Array();
+		var losing = new Array();
+		var nowmove = 1;
+		var selectedchess = -1;
+		var flags = new Array();
+		var flag_points = new Array();
+		var messages = new Array();
+		var win = 0;
+		const max_msg_line = 15;
+		const max_msg_chars_per_line = 31;
+
+		function init() {
+			add_player();
+			add_chess();
+			add_flag();
+			messages.push(new Message(0,"Game started."));
+			// messages.push(new Message(1,"p1test"));
+			// messages.push(new Message(2,"p2test"));
+			// messages.push(new Message(1,"Long Long Long Long Long Long Long message test"));
+			console.log("init done.");
+			requestAnimationFrame(update);
+		}
+
+		function update() {
+			clock += 1;
+			losing = new Array();
+			updatefps();
+			update_chess();
+			let win=update_lose();
+			// console.log(win);
+			// console.log("Calculated ",clock);
+			drawall();
+			if(win)
+			{
+				return;
+			}
+			// console.log("Drew ",clock);
+			requestAnimationFrame(update);
+		}
+
+		onload = init;
+	</script>
+	<style>
+	</style>
+</html>
